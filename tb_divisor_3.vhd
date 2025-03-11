@@ -6,7 +6,6 @@ entity tb_divisor_3 is
 end entity tb_divisor_3;
 
 architecture Behavioral of tb_divisor_3 is
-   -- **Componente a probar**
    component divisor_3 is
       port(
           clk         : in  std_logic;
@@ -17,18 +16,14 @@ architecture Behavioral of tb_divisor_3 is
       );
    end component;
 
-   -- **Señales de prueba**
    signal clk        : std_logic := '0';
    signal ena        : std_logic := '0';
    signal f_div_2_5  : std_logic;
    signal f_div_1_25 : std_logic;
    signal f_div_500  : std_logic;
    
-   -- **Definir el período del reloj**
-   constant clk_period : time := 10 ns;  -- Período de 100MHz (10ns por ciclo)
-   
+   constant clk_period : time := 10 ns;  
 begin
-   -- **Instancia del módulo divisor**
    uut: divisor_3 port map (
        clk        => clk,
        ena        => ena,
@@ -37,31 +32,33 @@ begin
        f_div_500  => f_div_500
    );
 
-   -- **Generador de reloj (100MHz)**
+   -- Generador de reloj de 100 MHz
    clk_process : process
    begin
       while true loop
          clk <= '0';
-         wait for clk_period/2;
+         wait for clk_period / 2;
          clk <= '1';
-         wait for clk_period/2;
+         wait for clk_period / 2;
       end loop;
    end process;
 
-   -- **Proceso de estímulos**
+   -- Estímulos para la simulación
    stimulus: process
    begin
-      -- **Aplicar reset**
+      -- Reset inicial
       ena  <= '0';
-      wait for 40 ns;  
-      ena  <= '1';  -- Habilitar el módulo
+      wait for 40 ns;
+      ena  <= '1';
       
-      -- **Ejecutar la simulación durante 2000 ns**
-      wait for 2000 ns;  
+      wait for 500 ns;  
+      ena <= '0';  
+      wait for 40 ns;  
+      ena <= '1';  
 
-      -- **Verificación de salidas (esperado: pulsos en f_div_2_5, f_div_1_25 y f_div_500)**
-      report "Fin de la simulación" severity note;
+      -- Simulación hasta 2000 ns
+      wait for 2000 ns;
+      
       assert false report "Simulación terminada" severity failure;
    end process;
-
 end Behavioral;
